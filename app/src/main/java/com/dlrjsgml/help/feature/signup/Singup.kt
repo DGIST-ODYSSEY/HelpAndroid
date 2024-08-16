@@ -1,8 +1,9 @@
-package com.dlrjsgml.help.feature.auth.login
+package com.dlrjsgml.help.feature.signup
 
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -10,61 +11,50 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.dlrjsgml.doparich.root.NavGroup
-import com.dlrjsgml.help.ui.component.MyTextField
+import com.dlrjsgml.help.feature.auth.login.LoginViewModel
 import com.dlrjsgml.help.ui.component.HelpButton
-import com.dlrjsgml.help.ui.theme.caption3
-import com.dlrjsgml.help.ui.theme.content1
+import com.dlrjsgml.help.ui.component.MyTextField
 import com.dlrjsgml.help.ui.theme.title1
-import com.dlrjsgml.help.ui.theme.title2
 
 @Composable
-fun LoginScreen(
+fun SignUpScreen(
     navBottomVisible: (Boolean) -> Unit,
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: SignUpViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.padding(15.dp)) {
         Spacer(modifier = Modifier.height(10.dp))
-        Text(text = "로그인", style = title1)
+        Text(text = "회원가입", style = title1)
         Spacer(modifier = Modifier.height(20.dp))
+        MyTextField(value = uiState.name, onValueChange = viewModel::updateName, hint = "이름을 입력해주세요")
+        Spacer(modifier = Modifier.height(10.dp))
         MyTextField(value = uiState.id, onValueChange = viewModel::updateId, hint = "아이디를 입력해주세요")
         Spacer(modifier = Modifier.height(10.dp))
         MyTextField(value = uiState.pw, onValueChange = viewModel::updatePw, hint = "비밀번호를 입력해주세요", secured = true)
         Spacer(modifier = Modifier.weight(1f))
-        TextButton(modifier = Modifier.align(Alignment.CenterHorizontally), onClick = {navController.navigate(NavGroup.ACCOUNT)}) {
-            Text(text = "회원가입", style = caption3)
-        }
         HelpButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 2.dp),
-            text = "로그인",
+            text = "회원가입",
             enabled = uiState.id.isNotEmpty() && uiState.pw.isNotEmpty(),
             contentPadding = PaddingValues(vertical = 16.5.dp),
             onClick = {
-                if(uiState.id.isNotEmpty() && uiState.pw.isNotEmpty()){
-                    val sharedPreference = context.getSharedPreferences("userInfo", MODE_PRIVATE)
-                    val editor  : SharedPreferences.Editor = sharedPreference.edit()
-                    editor.putString("id", uiState.id)
-                    editor.putString("pw", uiState.pw)
-                    editor.putBoolean("isLogin", true)
-                    editor.apply()
-
-                    navController.navigate(NavGroup.HOME)
+                if(uiState.id.isNotEmpty() && uiState.pw.isNotEmpty() && uiState.name.isNotEmpty()){
+                    Toast.makeText(context,"회원가입 성공",Toast.LENGTH_SHORT).show()
+                    navController.navigate(NavGroup.LOGIN)
                     Log.d("하하", "dlrjsㅇㅇㅇㅇㅇㅇgml44 Ok");
                 }
             }

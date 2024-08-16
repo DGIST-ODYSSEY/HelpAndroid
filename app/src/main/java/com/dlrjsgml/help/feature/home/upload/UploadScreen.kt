@@ -1,4 +1,4 @@
-package com.dlrjsgml.help.feature.auth.upload
+package com.dlrjsgml.help.feature.home.upload
 
 import android.graphics.Bitmap
 import android.util.Log
@@ -24,19 +24,24 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.dlrjsgml.doparich.root.NavGroup
+import com.dlrjsgml.help.feature.home.HomeViewModel
+import com.dlrjsgml.help.feature.home.goodBoards
 import com.dlrjsgml.help.ui.component.HelpButton
 import com.dlrjsgml.help.ui.component.MyTextField
 import com.dlrjsgml.help.ui.theme.title1
 
 @Composable
-fun UploadScreen(viewModel: UploadViewModel = viewModel()) {
+fun UploadScreen(
+    homeViewModel: HomeViewModel, // HomeViewModel 주입
+    viewModel: UploadViewModel = viewModel(),
+    homeviewModel: HomeViewModel = viewModel(),
+    navController: NavController
+) {
     val photo by viewModel.photo.collectAsState()
     val context = LocalContext.current
-    var title by remember { mutableStateOf(TextFieldValue("")) }
-    var content by remember { mutableStateOf(TextFieldValue("")) }
     val uiState by viewModel.uiState.collectAsState()
-
 
     // 카메라 촬영 후 결과를 처리하는 런처
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -73,7 +78,6 @@ fun UploadScreen(viewModel: UploadViewModel = viewModel()) {
         // 제목 입력 필드
         Spacer(modifier = Modifier.height(15.dp))
 
-
         MyTextField(
             value = uiState.title,
             onValueChange = viewModel::updateTitle,
@@ -90,7 +94,7 @@ fun UploadScreen(viewModel: UploadViewModel = viewModel()) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp)
-                .weight(1f), // 가용 공간을 채우도록 설정
+                .weight(1f),
             maxLine = 10
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -148,7 +152,6 @@ fun UploadScreen(viewModel: UploadViewModel = viewModel()) {
         }
 
         // 업로드 버튼
-
         HelpButton(
             modifier = Modifier
                 .fillMaxWidth()
@@ -158,11 +161,15 @@ fun UploadScreen(viewModel: UploadViewModel = viewModel()) {
             contentPadding = PaddingValues(vertical = 9.5.dp),
             onClick = {
                 if (uiState.title.isNotEmpty() && uiState.content.isNotEmpty()) {
-
-                    viewModel.uploadPost(title.text, content.text);
+                    val djdjad = UpLoadState(
+                        title = uiState.title,
+                        content = uiState.content,
+                    )
+                    goodBoards = goodBoards + djdjad
+                    homeviewModel.addPost(djdjad)
+                    navController.navigate(NavGroup.HOME) // HomeScreen으로 돌아가기
                 }
             }
         )
     }
 }
-

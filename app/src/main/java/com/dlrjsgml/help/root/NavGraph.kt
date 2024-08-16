@@ -42,14 +42,19 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.dlrjsgml.help.R
 import com.dlrjsgml.help.feature.auth.login.LoginScreen
-import com.dlrjsgml.help.feature.auth.upload.UploadScreen
+import com.dlrjsgml.help.feature.home.upload.UploadScreen
 import com.dlrjsgml.help.feature.home.HomeScreen
+import com.dlrjsgml.help.feature.home.HomeViewModel
+import com.dlrjsgml.help.feature.home.upload.UploadViewModel
+import com.dlrjsgml.help.feature.my.MyScreen
+import com.dlrjsgml.help.feature.signup.SignUpScreen
 import com.dlrjsgml.help.ui.theme.Blue200
 import com.dlrjsgml.help.ui.theme.Blue700
 import com.dlrjsgml.help.ui.theme.Gray200
@@ -73,6 +78,7 @@ fun NavGraph(
     var isShowNavBar by remember {
         mutableStateOf(false)
     }
+    val homeViewModel: HomeViewModel = viewModel()
 
     var isLogined by remember { mutableStateOf(false) }
     // Use LaunchedEffect to perform the login check
@@ -107,7 +113,7 @@ fun NavGraph(
                                     color = Gray200,
                                     shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                                 )
-                                .padding(bottom = 12.dp) // 동그라미 공간을 위한 패딩 추가
+                                .padding(bottom = 24.dp) // 동그라미 공간을 위한 패딩 추가
                         ) {
                             NavCard(
                                 modifier = Modifier
@@ -124,7 +130,6 @@ fun NavGraph(
                                 modifier = Modifier
                                     .weight(1f)
                                     .noRippleClickable {
-                                        navController.popBackStack()
                                         navController.navigate(NavGroup.USER)
                                     },
                                 resId = R.drawable.ic_user,
@@ -150,10 +155,10 @@ fun NavGraph(
                             contentAlignment = Alignment.Center // 아이콘이 Box의 중앙에 위치하도록 설정
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_camera),
+                                painter = painterResource(id = R.drawable.baseline_add_24),
                                 contentDescription = "Camera",
                                 tint = Color.White, // 아이콘 색상 설정
-                                modifier = Modifier.size(28.dp) // 아이콘 크기 설정
+                                modifier = Modifier.size(34.dp) // 아이콘 크기 설정
                             )
                         }
                     }
@@ -177,7 +182,13 @@ fun NavGraph(
 //                    AccountScreen(navController)
 //                }
                 composable(NavGroup.UPLOAD){
-                    UploadScreen()
+                    UploadScreen(
+                        homeViewModel
+                        ,navController = navController
+                    )
+                }
+                composable(NavGroup.ACCOUNT){
+                    SignUpScreen(navBottomVisible = changeNavBar, navController = navController)
                 }
                 composable(
                     NavGroup.HOME
@@ -191,9 +202,9 @@ fun NavGraph(
 //                    BoardScreen(navController)
 //                }
 //
-//                composable(NavGroup.USER) {
-//                    MyScreen(navController)
-//                }
+                composable(NavGroup.USER) {
+                    MyScreen(navController)
+                }
 //                composable(NavGroup.WRITE) {
 //                    WriteScreen(navController)
 //                }
